@@ -4,6 +4,7 @@ board = document.getElementById("game_board");
 ctx = board.getContext("2d");
 
 let cactus_xpos = board.width - 30;
+let acceleration = 4;
 
 function DrawBoard() {
     ctx.fillStyle = "#dddddd";
@@ -11,25 +12,74 @@ function DrawBoard() {
 }
 function DrawGround() {
     ctx.fillStyle = "#6e6363";
-    ctx.fillRect(0, (0.8*board.height), board.width, (0.8*board.height));
+    ctx.fillRect(0, (0.8*board.height), board.width, (0.2*board.height));
 }
-function DrawCactus(xpos, cact_size_x, cact_size_y) {
-    ctx.fillStyle = "#2db700";
-    ctx.fillRect(xpos, (0.8*board.height), -1*cact_size_x, -1*cact_size_y);
-
-    ctx.fillRect(xpos, ((0.8*board.height)+30-cact_size_y), 30, 10);
-    ctx.fillRect(xpos+20, ((0.8*board.height)+40-cact_size_y), 10, -30);
-
-    ctx.fillRect(xpos-50, ((0.8*board.height)+60-cact_size_y), 20, 8);
-    ctx.fillRect(xpos-50, ((0.8*board.height)+68-cact_size_y), 8, -20);
+class Cactus {
+    constructor() {
+        this.SetUpCactus();
+    }
+    SetUpCactus() {
+        this.x = board.width - 30;
+        this.y = 0.8*board.height;
+        this.width = 15+Math.random()*50;
+        this.height = 30+Math.random()*100;
+        this.accl = 3;
+    }
+    DrawCactus() {
+        ctx.fillStyle = "#2db700";
+        ctx.fillRect(this.x, this.y, this.width, -1*this.height);
+        this.x -= this.accl;
+        this.accl *= 1.001;
+        if (this.x <= 0) {
+            this.x = board.width - 30;
+        }
+    }
 }
+
+class Dinosaur {
+    constructor() {
+        this.SetUpDino();
+    }
+    SetUpDino() {
+        this.x = 15;
+        this.y = 0.8*board.height;
+        this.width = 75;
+        this.height = 150;
+        this.isJumping = false;
+    }
+    DrawDino() {
+        ctx.fillStyle = "#555555";
+        
+        if (this.isJumping) {
+            this.y -= this.jumpSpeed;
+            ctx.fillRect(this.x, this.y, this.width, -1*this.height);
+            this.jumpSpeed -= 0.5;
+            if (this.y >= (0.8*board.height)) {
+                this.y = 0.8*board.height;
+                this.isJumping = false;
+            }
+        } else {
+            ctx.fillRect(this.x, this.y, this.width, -1*this.height);
+        }
+    }
+    Jump() {
+        if (this.isJumping) {
+            return;
+        }
+        this.isJumping = true;
+        this.jumpSpeed = 15;
+    }
+}
+
+let cactus1 = new Cactus();
+let dino = new Dinosaur();
 function Game() {
     DrawBoard();
     DrawGround();
-    DrawCactus(cactus_xpos, 30, 120);
-    cactus_xpos -= 5;
-    if (cactus_xpos <= 0) {
-        cactus_xpos = board.width - 30;
-    }
+    cactus1.DrawCactus();
+    dino.DrawDino();
 }
+document.addEventListener("keydown", (e) => {
+    if (e.key == "ArrowUp" || e.key == "g") dino.Jump();
+});
 setInterval(Game, 1);
