@@ -46,6 +46,7 @@ class Dinosaur {
         this.width = 75;
         this.height = 150;
         this.isJumping = false;
+        this.gravity = 0.5;
     }
     DrawDino() {
         ctx.fillStyle = "#555555";
@@ -53,7 +54,7 @@ class Dinosaur {
         if (this.isJumping) {
             this.y -= this.jumpSpeed;
             ctx.fillRect(this.x, this.y, this.width, -1*this.height);
-            this.jumpSpeed -= 0.5;
+            this.jumpSpeed -= this.gravity;
             if (this.y >= (0.8*board.height)) {
                 this.y = 0.8*board.height;
                 this.isJumping = false;
