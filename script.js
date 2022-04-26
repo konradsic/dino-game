@@ -81,6 +81,6 @@ function Game() {
     dino.DrawDino();
 }
 document.addEventListener("keydown", (e) => {
-    if (e.key == "ArrowUp" || e.key == "g") dino.Jump();
+    if (e.key == "ArrowUp" || e.key == "g" || e.key == " ") dino.Jump();
 });
 setInterval(Game, 1);
